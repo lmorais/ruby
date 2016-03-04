@@ -1,7 +1,7 @@
 # -*- coding: us-ascii -*-
 # frozen_string_literal: false
 require 'test/unit'
-EnvUtil.suppress_warning {require 'continuation'}
+#EnvUtil.suppress_warning {require 'continuation'}
 
 class TestHash < Test::Unit::TestCase
 
@@ -902,6 +902,19 @@ class TestHash < Test::Unit::TestCase
     assert_equal({3=>4,5=>6}, h)
     h = @cls[1=>2,3=>4,5=>6]
     assert_equal(nil, h.select!{true})
+  end
+
+  def test_compact
+    h = @cls[a: 1, b: 2, c: nil]
+    assert_equal({a: 1, b: 2}, h.compact)
+    assert_equal({a: 1, b: 2, c: nil}, h)
+  end
+
+  def test_compact!
+    h = @cls[a: 1, b: 2, c: nil]
+    assert_equal({a: 1, b: 2, c: nil}, h.compact!)
+    assert_equal({a: 1, b: 2}, h)
+    assert_equal(nil, h.compact!)
   end
 
   def test_clear2

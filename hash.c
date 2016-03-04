@@ -1379,6 +1379,74 @@ rb_hash_select(VALUE hash)
     return result;
 }
 
+/*
+ * call-seq:
+ *   hsh.compact -> new_hsh
+ *
+ *  Returns a copy of +self+ with all +nil+ values removed.
+ *
+ *		hsh = { "a": 1, "b": 2, c: nil}
+ * 		hsh.compact # => { "a": 1, "b": 2}
+ * 		hsh #=> { "a": 1, "b": 2, "c": nil}
+ */
+
+static int
+set_if_not_nil(VALUE key, VALUE value, VALUE result)
+{
+    if (!NIL_P(value)) {
+		rb_hash_aset(result, key, value);
+    }
+    return ST_CONTINUE;
+}
+
+ VALUE
+ rb_hash_compact(VALUE hash)
+ {
+ 	VALUE result = rb_hash_new();
+ 	if(!RHASH_SIZE(hash) == 0){
+ 		rb_hash_foreach(hash, set_if_not_nil, result)
+ 	}
+ 	return result;
+
+ }
+
+/*
+ * call-seq:
+ *   hsh.compact! -> hsh
+ *
+ *  Removes all keys with +nil+ values from the hash.
+ *
+ *  if no changes were made, otherwise returns the hash.
+ *
+ *		hsh = { "a": 1, "b": 2, c: nil}
+ * 		hsh.compact! # => { "a": 1, "b": 2}
+ * 		hsh #=> { "a": 1, "b": 2}
+ */
+
+static int
+remove_if_nil(VALUE key, VALUE value, VALUE hash)
+ {
+     if (NIL_P(value)) {
+ 		return ST_DELETE;
+     }
+     return ST_CONTINUE;
+ }
+
+VALUE
+rb_hash_compact_bang(VALUE hash)
+{
+     rb_hash_modify_check(hash);
+     if (!RHASH_SIZE(hash)){
+     	return Qnil;
+     }
+     rb_hash_foreach(hash, remove_if_nil, hash);
+     if ((st_index_t)RHASH(h)->ntbl->num_entries == RHASH_SIZE(hash)){
+     	return Qnil;
+     }
+     return hash;
+ }
+
+
 static int
 keep_if_i(VALUE key, VALUE value, VALUE hash)
 {
@@ -4287,6 +4355,9 @@ Init_Hash(void)
     rb_define_method(rb_cHash,"values", rb_hash_values, 0);
     rb_define_method(rb_cHash,"values_at", rb_hash_values_at, -1);
     rb_define_method(rb_cHash,"fetch_values", rb_hash_fetch_values, -1);
+
+	rb_define_method(rb_cHash,"compact", rb_hash_compact, 0);
+	rb_define_method(rb_cHash,"compact!", rb_hash_compact_bang, 0);
 
     rb_define_method(rb_cHash,"shift", rb_hash_shift, 0);
     rb_define_method(rb_cHash,"delete", rb_hash_delete_m, 1);
