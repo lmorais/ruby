@@ -1402,11 +1402,11 @@ set_if_not_nil(VALUE key, VALUE value, VALUE result)
  VALUE
  rb_hash_compact(VALUE hash)
  {
- 	VALUE result = rb_hash_new();
+ 	VALUE new_hash = rb_hash_new();
  	if(!RHASH_SIZE(hash) == 0){
- 		rb_hash_foreach(hash, set_if_not_nil, result)
+ 		rb_hash_foreach(hash, set_if_not_nil, new_hash);
  	}
- 	return result;
+ 	return new_hash;
 
  }
 
@@ -1440,11 +1440,11 @@ rb_hash_compact_bang(VALUE hash)
      	return Qnil;
      }
      rb_hash_foreach(hash, remove_if_nil, hash);
-     if ((st_index_t)RHASH(h)->ntbl->num_entries == RHASH_SIZE(hash)){
+     if ((st_index_t)RHASH(hash)->ntbl->num_entries == RHASH_SIZE(hash)){
      	return Qnil;
      }
      return hash;
- }
+}
 
 
 static int
