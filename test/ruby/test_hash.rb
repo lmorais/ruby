@@ -906,14 +906,14 @@ class TestHash < Test::Unit::TestCase
 
   def test_compact
     h = @cls[a: 1, b: 2, c: nil]
-    assert_equal({a: 1, b: 2}, h.compact)
-    assert_equal({a: 1, b: 2, c: nil}, h)
+    assert_equal(@cls[a: 1, b: 2], h.compact)
+    assert_equal(@cls[a: 1, b: 2, c: nil], h)
   end
 
   def test_compact!
     h = @cls[a: 1, b: 2, c: nil]
-    assert_equal({a: 1, b: 2, c: nil}, h.compact!)
-    assert_equal({a: 1, b: 2}, h)
+    h.compact!
+    assert_equal(@cls[a: 1, b: 2], h)
     assert_equal(nil, h.compact!)
   end
 
